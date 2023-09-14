@@ -1,9 +1,15 @@
 const knex = require("../db/db");
 const logger = require("../logger");
 const hash_password = require("../utils/generateHash");
+const userSchema = require("../schema/userSchema");
 
 const create_user = async (req, res) => {
   // TODO : Check if the user already exists with same email
+  const { error } = userSchema.validate(req.body);
+  if (error) {
+    logger.error(error.details[0].message);
+    return res.status(400).json({ err: error.details[0].message });
+  }
   const { username, email, password, name } = req.body;
   const new_password = await hash_password(password);
   const data = await knex("Users")
@@ -102,7 +108,6 @@ const delete_user = async (req, res) => {
     .catch((err) => {
       logger.error("Error updating user:", err);
     });
-
 
   res.json({ data: "User deleted" });
 };
