@@ -1,5 +1,4 @@
-# node-version-intern
-## Nodejs with Postgres
+# Nodejs with Postgres
 
 This is just a sample project that users Nodejs with Postgres using Knex qurey builder and deployed using docker & nginx
 
