@@ -1,4 +1,5 @@
-# Nodejs with Postgres
+# node-version-intern
+## Nodejs with Postgres
 
 This is just a sample project that users Nodejs with Postgres using Knex qurey builder and deployed using docker & nginx
 
@@ -6,6 +7,12 @@ This is just a sample project that users Nodejs with Postgres using Knex qurey b
 
 [Postman Documentation](https://documenter.getpostman.com/view/25654764/2s9YC5yCqg)
 
+## Features
+- Schema Validation using JOI
+- Central Error handling 
+- Docker Container Deployment
+- Password Hashing using Bcrypt
+- MVC approach Folder Structure
 ## NOTE
 
 Since the deployment is done on AWS EC2 on http, hence the url may change. If happens so contact me. \
