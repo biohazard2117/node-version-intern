@@ -15,9 +15,6 @@ RUN npm install
 # Copy SRC
 COPY . .
 
-# Build
-# RUN npm run build
-
 # Open Port
 EXPOSE 8080
 
