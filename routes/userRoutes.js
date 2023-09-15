@@ -2,15 +2,20 @@ const express = require("express");
 const userControllers = require("../controllers/userControllers");
 const router = express.Router();
 
+const use = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+
 router
   .route("/")
-  .post(userControllers.create_user)
-  .get(userControllers.get_all_users);
+  .post(use(userControllers.create_user))
+  .get(use(userControllers.get_all_users));
 
 router
   .route("/:id")
-  .get(userControllers.get_user)
-  .put(userControllers.update_user)
-  .delete(userControllers.delete_user);
+  .get(use(userControllers.get_user))
+  .put(use(userControllers.update_user))
+  .delete(use(userControllers.delete_user));
 
 module.exports = router;

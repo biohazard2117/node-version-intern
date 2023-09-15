@@ -11,11 +11,15 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 // api routes
 app.use("/api/user", userRoutes);
+app.use(function (err, req, res, next) {
+  logger.error(err);
+  res.status(400).send(err.message);
+});
 app.use("/api/test", (req, res) => {
   res.json({ message: "hi" }).status(200);
 });

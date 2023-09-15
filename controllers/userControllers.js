@@ -2,14 +2,11 @@ const knex = require("../db/db");
 const logger = require("../logger");
 const hash_password = require("../utils/generateHash");
 const userSchema = require("../schema/userSchema");
+const error_generator = require("../error/error");
 
 const create_user = async (req, res) => {
-  // TODO : Check if the user already exists with same email
   const { error } = userSchema.validate(req.body);
-  if (error) {
-    logger.error(error.details[0].message);
-    return res.status(400).json({ err: error.details[0].message });
-  }
+  if (error) error_generator("Validation Error", error.details[0].message);
   const { username, email, password, name } = req.body;
   const new_password = await hash_password(password);
   const data = await knex("Users")
@@ -21,8 +18,7 @@ const create_user = async (req, res) => {
     })
     .returning(["id", "name", "username"])
     .catch((err) => {
-      logger.error("Error updating user:", err);
-      return res.status(201).json({ message: "Error updating user" });
+      error_generator("Error updating user", err);
     });
   res.status(201).json({ data: data });
 };
@@ -32,7 +28,7 @@ const get_all_users = async (req, res) => {
     .select("name", "id", "username", "email")
     .from("Users")
     .catch((err) => {
-      logger.error("Error updating user:", err);
+      error_generator("Error getting list of users", err);
     });
   res.status(200).json({ data: users });
 };
@@ -43,13 +39,11 @@ const get_user = async (req, res) => {
     .where("id", id)
     .select(["email", "name", "username"])
     .catch((err) => {
-      logger.error("Error updating user:", err);
+      error_generator("Error getting user", err);
     });
 
-  if (Object.keys(user).length === 0) {
-    logger.info(`No user with id :${id} found`);
-    return res.status(204).json();
-  }
+  if (Object.keys(user).length === 0)
+    error_generator(`No user with found with id`, id);
 
   res.json({ data: user });
 };
@@ -57,18 +51,16 @@ const get_user = async (req, res) => {
 const update_user = async (req, res) => {
   const id = req.params["id"];
   let { email, username } = req.body;
-  // TODO if email already exists send error
   const user = await knex("Users")
     .where("id", id)
     .select(["email", "username"])
     .catch((err) => {
-      logger.error("Error updating user:", err);
+      error_generator("Error updating user:", err);
     });
 
   // if user not found
   if (Object.keys(user).length === 0) {
-    logger.info(`No user with id :${id} found`);
-    return res.status(204).json();
+    error_generator(`No user with found with id`, id);
   }
 
   username = username ? username : user.username;
@@ -86,7 +78,7 @@ const update_user = async (req, res) => {
       email,
     })
     .catch((err) => {
-      logger.error("Error updating user:", err);
+      error_generator("Error updating user:", err);
     });
 
   res.status(200).json({ data: "Updated Successfully" });
@@ -99,14 +91,10 @@ const delete_user = async (req, res) => {
     .where("id", id)
     .del()
     .then((numUpdated) => {
-      if (numUpdated > 0) {
-        logger.info(`User with ID ${id} updated successfully.`);
-      } else {
-        logger.info(`User with ID ${id} not found.`);
-      }
+      if (numUpdated == 0) error_generator(`No user with found with id`, id);
     })
     .catch((err) => {
-      logger.error("Error updating user:", err);
+      error_generator("Error deleting the user:", err);
     });
 
   res.json({ data: "User deleted" });
