@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 
 // api routes
 app.use("/api/user", userRoutes);
+// error handling function
 app.use(function (err, req, res, next) {
   logger.error(err);
   res.status(400).send(err.message);

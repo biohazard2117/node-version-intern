@@ -2,6 +2,7 @@ const express = require("express");
 const userControllers = require("../controllers/userControllers");
 const router = express.Router();
 
+// middleware to handle the errors 
 const use = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };

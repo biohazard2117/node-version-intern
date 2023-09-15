@@ -1,5 +1,4 @@
 const knex = require("../db/db");
-const logger = require("../logger");
 const hash_password = require("../utils/generateHash");
 const userSchema = require("../schema/userSchema");
 const error_generator = require("../error/error");
@@ -25,7 +24,7 @@ const create_user = async (req, res) => {
 
 const get_all_users = async (req, res) => {
   const users = await knex
-    .select("name", "id", "username", "email")
+    .select(['id','name','username','email'])
     .from("Users")
     .catch((err) => {
       error_generator("Error getting list of users", err);
@@ -37,7 +36,7 @@ const get_user = async (req, res) => {
   const id = req.params["id"];
   const user = await knex("Users")
     .where("id", id)
-    .select(["email", "name", "username"])
+    .select()
     .catch((err) => {
       error_generator("Error getting user", err);
     });
@@ -71,14 +70,14 @@ const update_user = async (req, res) => {
     email,
   });
 
-  knex("Users")
+  await knex("Users")
     .where("id", id)
     .update({
       username,
       email,
     })
     .catch((err) => {
-      error_generator("Error updating user:", err);
+      error_generator("Error updating user", err.message);
     });
 
   res.status(200).json({ data: "Updated Successfully" });
